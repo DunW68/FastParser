@@ -64,12 +64,3 @@ class ParseUrl:
         images = bs_parse.find_all("img")
         images = list(self.check_image(images))[:count]
         return images
-
-    def parse_url(self):
-        """
-        Main parser function
-        """
-        bs_parse = self.init_scrapper()
-        header = self.get_header(bs_parse=bs_parse)
-        article = self.get_article(bs_parse=bs_parse)
-        images = self.get_article_images(bs_parse=bs_parse, count=3)
