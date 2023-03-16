@@ -22,18 +22,18 @@ class ParseUrl:
         bs_parse = BeautifulSoup(markup, "lxml")
         return bs_parse
 
-    def get_header(self, bs_parse: BeautifulSoup) -> str:
+    def get_header(self, bs_parser: BeautifulSoup) -> str:
         """
         Get title of an article
         """
-        header = bs_parse.find("h1").text
+        header = bs_parser.find("h1").text
         return header
 
-    def get_article(self, bs_parse: BeautifulSoup) -> str:
+    def get_article_text(self, bs_parser: BeautifulSoup) -> str:
         """
         Get text of an article
         """
-        article = bs_parse.find_all("p")
+        article = bs_parser.find_all("p")
         article = " ".join(self.delete_article_garbage(article_list=article))
         return article
 
@@ -57,10 +57,10 @@ class ParseUrl:
                     image = self.url_schema + "://" + image
                 yield image
 
-    def get_article_images(self, bs_parse: BeautifulSoup, count: int = 5):
+    def get_article_images(self, bs_parser: BeautifulSoup, count: int = 5):
         """
         Get images from article
         """
-        images = bs_parse.find_all("img")
+        images = bs_parser.find_all("img")
         images = list(self.check_image(images))[:count]
         return images
