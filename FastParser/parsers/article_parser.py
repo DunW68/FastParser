@@ -8,32 +8,29 @@ from bs4 import BeautifulSoup
 class ParseUrl:
 
     def __init__(self, url: str):
+        """
+        Web scrapper initialization
+        """
         self.url = url
         self.parsed_url = parse_url(self.url)
         self.url_schema = self.parsed_url.scheme
         self.domain = self.url_schema + "://" + self.parsed_url.host
-
-    def init_scrapper(self) -> BeautifulSoup:
-        """
-        Web scrapper initialization
-        """
         scrapper = cfscrape.create_scraper()
         markup = scrapper.get(url=self.url).text
-        bs_parse = BeautifulSoup(markup, "lxml")
-        return bs_parse
+        self.bs_parser = BeautifulSoup(markup, "lxml")
 
-    def get_header(self, bs_parser: BeautifulSoup) -> str:
+    def get_header(self) -> str:
         """
         Get title of an article
         """
-        header = bs_parser.find("h1").text
+        header = self.bs_parser.find("h1").text
         return header
 
-    def get_article_text(self, bs_parser: BeautifulSoup) -> str:
+    def get_article_text(self) -> str:
         """
         Get text of an article
         """
-        article = bs_parser.find_all("p")
+        article = self.bs_parser.find_all("p")
         article = " ".join(self.delete_article_garbage(article_list=article))
         return article
 
@@ -57,10 +54,10 @@ class ParseUrl:
                     image = self.url_schema + "://" + image
                 yield image
 
-    def get_article_images(self, bs_parser: BeautifulSoup, count: int = 5):
+    def get_article_images(self, count: int = 5):
         """
         Get images from article
         """
-        images = bs_parser.find_all("img")
+        images = self.bs_parser.find_all("img")
         images = list(self.check_image(images))[:count]
         return images
