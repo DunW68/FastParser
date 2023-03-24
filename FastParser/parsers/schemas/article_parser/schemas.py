@@ -2,12 +2,12 @@ from pydantic import BaseModel, AnyUrl
 
 
 class ArticleImage(BaseModel):
-    page_url: AnyUrl
     image_url: AnyUrl
     article_id: int
 
 
 class ArticleParserBase(BaseModel):
+    page_url: AnyUrl
     header: str
     text: str
 
