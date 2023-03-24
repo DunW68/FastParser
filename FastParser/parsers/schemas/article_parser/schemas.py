@@ -1,9 +1,8 @@
 from pydantic import BaseModel, AnyUrl
 
 
-class ArticleImage(BaseModel):
-    image_url: AnyUrl
-    article_id: int
+class ArticleImages(BaseModel):
+    images: list[AnyUrl]
 
 
 class ArticleParserBase(BaseModel):

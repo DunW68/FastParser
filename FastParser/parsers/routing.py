@@ -3,10 +3,10 @@ from fastapi import Depends, FastAPI, Header, HTTPException, APIRouter
 from starlette.status import HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND, HTTP_201_CREATED
 from FastParser.db.configs import Base, engine, ArticleParserSession
 from fastapi_utils.cbv import cbv
-from FastParser.parsers.schemas.article_parser.schemas import GetArticle, ArticleParserBase
+from FastParser.parsers.schemas.article_parser.schemas import GetArticle, ArticleParserBase, ArticleImages
 from pydantic import AnyUrl
 from FastParser.parsers.article_parser import ParseUrl
-from FastParser.db.parsers.article_parser.requests import ArticleRequests
+from FastParser.db.parsers.article_parser.requests import ArticleRequests, ArticleImagesRequests
 
 
 Base.metadata.create_all(bind=engine)
@@ -19,16 +19,16 @@ class ArticleParser:
 
     def __init__(self):
         self.article_requests = ArticleRequests(db_session=ArticleParserSession())
+        self.art_images_requests = ArticleImagesRequests(db_session=ArticleParserSession())
 
     @router.get("/")
     def get_article(self, url: AnyUrl) -> GetArticle:
-        url_parser = ParseUrl(url=url)
-        header = url_parser.get_header()
-        article_text = url_parser.get_article_text()
-        images = url_parser.get_article_images()
-        response = GetArticle(header=header,
-                              text=article_text,
-                              images=images
+        record = self.article_requests.get_record_by_url(page_url=url)
+        response = GetArticle(
+                              page_url=url,
+                              header=record.header,
+                              text=record.text,
+                              images=[image.image_url for image in record.images]
                              )
         return response
 
@@ -38,8 +38,11 @@ class ArticleParser:
         header = url_parser.get_header()
         article_text = url_parser.get_article_text()
         article = ArticleParserBase(page_url=url, header=header, text=article_text)
+        images = url_parser.get_article_images()
+        images = ArticleImages(images=images)
         try:
-            a = self.article_requests.create_record(article=article)
+            art_record = self.article_requests.create_record(article=article)
+            self.art_images_requests.create_record(article_images=images, article_id=art_record.id)
             response = {"detail": "Successfully parsed"}
         except sqlalchemy.exc.IntegrityError:
             response = {"detail": "Already exists"}
