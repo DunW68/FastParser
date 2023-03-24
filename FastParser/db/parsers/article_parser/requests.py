@@ -22,6 +22,18 @@ class ArticleRequests:
                                                              ).first()
         return record
 
+    def replace_record(self, page_url, article: schemas.ArticleParserBase):
+        record = self.get_record_by_url(page_url=page_url)
+        if record:
+            record.header = article.header
+            record.text = article.text
+            record.page_url = article.page_url
+            self.db_session.add(record)
+            self.db_session.commit()
+            self.db_session.refresh(record)
+            self.db_session.close()
+        return record
+
 
 class ArticleImagesRequests:
 

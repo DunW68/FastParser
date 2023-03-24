@@ -1,6 +1,6 @@
-import sqlalchemy.exc
-from fastapi import Depends, FastAPI, Header, HTTPException, APIRouter
-from starlette.status import HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND, HTTP_201_CREATED
+from sqlalchemy.exc import IntegrityError
+from fastapi import FastAPI, APIRouter
+from starlette.status import HTTP_201_CREATED
 from FastParser.db.configs import Base, engine, ArticleParserSession
 from fastapi_utils.cbv import cbv
 from FastParser.parsers.schemas.article_parser.schemas import GetArticle, ArticleParserBase, ArticleImages
@@ -44,11 +44,22 @@ class ArticleParser:
             art_record = self.article_requests.create_record(article=article)
             self.art_images_requests.create_record(article_images=images, article_id=art_record.id)
             response = {"detail": "Successfully parsed"}
-        except sqlalchemy.exc.IntegrityError:
+        except IntegrityError:
             response = {"detail": "Already exists"}
         return response
 
-
+    @router.put("/", status_code=HTTP_201_CREATED)
+    def put_article(self, url: AnyUrl) -> dict:
+        parser = ParseUrl(url=url)
+        article = ArticleParserBase(page_url=url, header=parser.get_header(), text=parser.get_article_text())
+        images = ArticleImages(images=parser.get_article_images())
+        record = self.article_requests.replace_record(page_url=url, article=article)
+        if record:
+            self.art_images_requests.create_record(article_images=images, article_id=record.id)
+            response = {"detail": "Successfully parsed"}
+        else:
+            response = {"detail": "Nothing to put to. Post this article first."}
+        return response
 
 
 parser.include_router(router, prefix="/article_parser")
