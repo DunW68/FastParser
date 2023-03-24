@@ -1,4 +1,3 @@
-from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError, PendingRollbackError
 from FastParser.db.parsers.article_parser import models
@@ -12,7 +11,7 @@ class ArticleRequests:
 
     def create_record(self, article: schemas.ArticleParserBase) -> models.Article:
         article = models.Article(page_url=article.page_url, header=article.header,
-                                 text=article.text, parsed_date=datetime.utcnow())
+                                 text=article.text)
         self.db_session.add(article)
         self.db_session.commit()
         self.db_session.refresh(article)
