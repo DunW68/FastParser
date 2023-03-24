@@ -1,5 +1,6 @@
 from sqlalchemy.exc import IntegrityError
 from fastapi import FastAPI, APIRouter
+from typing import Union
 from starlette.status import HTTP_201_CREATED
 from FastParser.db.configs import Base, engine, ArticleParserSession
 from fastapi_utils.cbv import cbv
@@ -22,14 +23,17 @@ class ArticleParser:
         self.art_images_requests = ArticleImagesRequests(db_session=ArticleParserSession())
 
     @router.get("/")
-    def get_article(self, url: AnyUrl) -> GetArticle:
+    def get_article(self, url: AnyUrl) -> Union[GetArticle, dict]:
         record = self.article_requests.get_record_by_url(page_url=url)
-        response = GetArticle(
-                              page_url=url,
-                              header=record.header,
-                              text=record.text,
-                              images=[image.image_url for image in record.images]
-                             )
+        if record:
+            response = GetArticle(
+                                  page_url=url,
+                                  header=record.header,
+                                  text=record.text,
+                                  images=[image.image_url for image in record.images]
+                                 )
+        else:
+            response = {"detail": "Article not found!"}
         return response
 
     @router.post("/", status_code=HTTP_201_CREATED)
