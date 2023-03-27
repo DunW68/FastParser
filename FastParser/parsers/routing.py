@@ -65,5 +65,14 @@ class ArticleParser:
             response = {"detail": "Nothing to put to. Post this article first."}
         return response
 
+    @router.delete("/")
+    def delete_article(self, page_url: AnyUrl):
+        article = self.article_requests.delete_record(page_url=page_url)
+        if article:
+            response = {"detail": "Article deleted"}
+        else:
+            response = {"detail": "Article not found!"}
+        return response
+
 
 parser.include_router(router, prefix="/article_parser")

@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError, PendingRollbackError
 from FastParser.db.parsers.article_parser import models
 from FastParser.parsers.schemas.article_parser import schemas
+from pydantic import AnyUrl
 
 
 class ArticleRequests:
@@ -33,6 +34,14 @@ class ArticleRequests:
             self.db_session.add(record)
             self.db_session.commit()
             self.db_session.refresh(record)
+            self.db_session.close()
+        return record
+
+    def delete_record(self, page_url: AnyUrl):
+        record = self.get_record_by_url(page_url=page_url)
+        if record:
+            self.db_session.delete(record)
+            self.db_session.commit()
             self.db_session.close()
         return record
 

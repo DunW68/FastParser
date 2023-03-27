@@ -13,7 +13,7 @@ class Article(Base):
     text = Column(String, default=None)
     parsed_date = Column(DateTime, default=datetime.utcnow())
 
-    images = relationship("ImageUrls", back_populates="articles")
+    images = relationship("ImageUrls", back_populates="articles", cascade="all,delete")
 
 
 class ImageUrls(Base):
