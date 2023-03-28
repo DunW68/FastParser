@@ -24,7 +24,7 @@ class ArticleParser:
 
     @router.get("/")
     def get_article(self, url: AnyUrl) -> Union[GetArticle, dict]:
-        record = self.article_requests.get_record_by_url(page_url=url)
+        record = self.article_requests.get_article_by_url(page_url=url)
         if record:
             response = GetArticle(
                                   page_url=url,
@@ -45,8 +45,8 @@ class ArticleParser:
         images = url_parser.get_article_images()
         images = ArticleImages(images=images)
         try:
-            art_record = self.article_requests.create_record(article=article)
-            self.art_images_requests.create_record(article_images=images, article_id=art_record.id)
+            art_record = self.article_requests.create_article(article=article)
+            self.art_images_requests.save_image(article_images=images, article_id=art_record.id)
             response = {"detail": "Successfully parsed"}
         except IntegrityError:
             response = {"detail": "Already exists"}
@@ -57,9 +57,9 @@ class ArticleParser:
         parser = ParseUrl(url=url)
         article = ArticleParserBase(page_url=url, header=parser.get_header(), text=parser.get_article_text())
         images = ArticleImages(images=parser.get_article_images())
-        record = self.article_requests.replace_record(page_url=url, article=article)
+        record = self.article_requests.replace_article(page_url=url, article=article)
         if record:
-            self.art_images_requests.create_record(article_images=images, article_id=record.id)
+            self.art_images_requests.save_image(article_images=images, article_id=record.id)
             response = {"detail": "Successfully parsed"}
         else:
             response = {"detail": "Nothing to put to. Post this article first."}
@@ -67,7 +67,7 @@ class ArticleParser:
 
     @router.delete("/")
     def delete_article(self, page_url: AnyUrl):
-        article = self.article_requests.delete_record(page_url=page_url)
+        article = self.article_requests.delete_article(page_url=page_url)
         if article:
             response = {"detail": "Article deleted"}
         else:
