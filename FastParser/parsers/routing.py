@@ -75,4 +75,25 @@ class ArticleParser:
         return response
 
 
+page_info_router = APIRouter(tags=["Pages Info"])
+
+
+@cbv(page_info_router)
+class PagesInfo:
+
+    def __init__(self):
+        self.art_images_requests = ArticleImagesRequests(db_session=ArticleParserSession())
+
+    @page_info_router.get("/related_pages")
+    def get_article(self, url: AnyUrl, count: int = 5) -> Union[ArticleImages, dict]:
+        images = self.art_images_requests.get_related_images(page_url=url, count=count)
+        if images:
+            images = [image_url.image_url for image_url in images]
+            response = ArticleImages(images=images)
+        else:
+            response = {"detail": "Images not found!"}
+        return response
+
+
+parser.include_router(page_info_router, prefix="/article_parser")
 parser.include_router(router, prefix="/article_parser")
