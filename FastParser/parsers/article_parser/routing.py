@@ -4,9 +4,10 @@ from typing import Union
 from starlette.status import HTTP_201_CREATED
 from FastParser.db.configs import Base, engine, ArticleParserSession
 from fastapi_utils.cbv import cbv
-from FastParser.parsers.schemas.article_parser.schemas import GetArticle, ArticleParserBase, ArticleImages
+from FastParser.parsers.article_parser.schemas.schemas import GetArticle, ArticleParserBase, \
+    ArticleImages
 from pydantic import AnyUrl
-from FastParser.parsers.article_parser import ParseUrl
+from FastParser.parsers.article_parser.article_parser import ParseUrl
 from FastParser.db.parsers.article_parser.requests import ArticleRequests, ArticleImagesRequests
 
 
@@ -66,7 +67,7 @@ class ArticleParser:
         return response
 
     @router.delete("/")
-    def delete_article(self, page_url: AnyUrl):
+    def delete_article(self, page_url: AnyUrl) -> dict:
         article = self.article_requests.delete_article(page_url=page_url)
         if article:
             response = {"detail": "Article deleted"}

@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from FastParser.parsers.routing import parser
+from FastParser.parsers.article_parser.routing import parser
 from fastapi.responses import FileResponse
 
 
@@ -8,5 +8,5 @@ app.mount("/parsers", parser)
 
 
 @app.get("/")
-def main_page():
+def main_page() -> FileResponse:
     return FileResponse("FastParser/python-hello-world.webp")

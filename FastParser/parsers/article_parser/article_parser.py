@@ -54,7 +54,7 @@ class ParseUrl:
                     image = self.url_schema + "://" + image
                 yield image
 
-    def get_article_images(self, count: int = 5):
+    def get_article_images(self, count: int = 5) -> list[str]:
         """
         Get images from article
         """
