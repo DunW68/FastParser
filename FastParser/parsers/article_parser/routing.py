@@ -12,7 +12,7 @@ from FastParser.db.parsers.article_parser.requests import ArticleRequests, Artic
 
 
 Base.metadata.create_all(bind=engine)
-parser = FastAPI()
+parser = FastAPI(title="FastParser", description="Parses text and images from article.")
 router = APIRouter(tags=["Parser"])
 
 
@@ -23,8 +23,9 @@ class ArticleParser:
         self.article_requests = ArticleRequests(db_session=ArticleParserSession())
         self.art_images_requests = ArticleImagesRequests(db_session=ArticleParserSession())
 
-    @router.get("/")
+    @router.get("/", summary="Gets an article")
     def get_article(self, url: AnyUrl) -> Union[GetArticle, dict]:
+        """ Gets an article by page url"""
         record = self.article_requests.get_article_by_url(page_url=url)
         if record:
             response = GetArticle(
@@ -37,8 +38,9 @@ class ArticleParser:
             response = {"detail": "Article not found!"}
         return response
 
-    @router.post("/", status_code=HTTP_201_CREATED)
+    @router.post("/", status_code=HTTP_201_CREATED, summary="Parses an article")
     def post_article(self, url: AnyUrl) -> dict:
+        """ Parses an article by page url and saves in db"""
         url_parser = ParseUrl(url=url)
         header = url_parser.get_header()
         article_text = url_parser.get_article_text()
@@ -53,8 +55,9 @@ class ArticleParser:
             response = {"detail": "Already exists"}
         return response
 
-    @router.put("/", status_code=HTTP_201_CREATED)
+    @router.put("/", status_code=HTTP_201_CREATED, summary="Updates an existing article")
     def put_article(self, url: AnyUrl) -> dict:
+        """ Updates an existing article in db"""
         parser = ParseUrl(url=url)
         article = ArticleParserBase(page_url=url, header=parser.get_header(), text=parser.get_article_text())
         images = ArticleImages(images=parser.get_article_images())
@@ -66,8 +69,9 @@ class ArticleParser:
             response = {"detail": "Nothing to put to. Post this article first."}
         return response
 
-    @router.delete("/")
+    @router.delete("/", summary="Deletes article")
     def delete_article(self, page_url: AnyUrl) -> dict:
+        """ Deletes article from db """
         article = self.article_requests.delete_article(page_url=page_url)
         if article:
             response = {"detail": "Article deleted"}
@@ -85,8 +89,9 @@ class PagesInfo:
     def __init__(self):
         self.art_images_requests = ArticleImagesRequests(db_session=ArticleParserSession())
 
-    @page_info_router.get("/related_pages")
+    @page_info_router.get("/related_pages", summary="Gets related pages")
     def get_article(self, url: AnyUrl, count: int = 5) -> Union[ArticleImages, dict]:
+        """ Gets related pages to an article by page url """
         images = self.art_images_requests.get_related_images(page_url=url, count=count)
         if images:
             images = [image_url.image_url for image_url in images]
