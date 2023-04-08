@@ -24,5 +24,4 @@ services:
     - "8000:8000"
     links:
       - postgres:postgres
-    restart:
-      "always"
+    restart: always

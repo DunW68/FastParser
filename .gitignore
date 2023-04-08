@@ -160,3 +160,4 @@ cython_debug/
 .idea/
 alembic.ini
 alembic/
+db_data/
