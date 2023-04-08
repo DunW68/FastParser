@@ -8,7 +8,7 @@ def create_db_url(database):
         drivername="postgresql+psycopg2",
         username="postgres",
         password="admin",
-        host="localhost",
+        host="postgres",
         port=5432,
         database=database,
     )

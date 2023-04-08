@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from FastParser.db.configs import Base
+from fastparser.db.configs import Base
 
 
 class Article(Base):

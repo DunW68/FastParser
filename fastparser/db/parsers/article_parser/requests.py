@@ -1,10 +1,10 @@
 from sqlalchemy.exc import IntegrityError, PendingRollbackError
-from FastParser.db.parsers.article_parser import models
-from FastParser.parsers.article_parser.schemas import schemas
+from fastparser.db.parsers.article_parser import models
+from fastparser.parsers.article_parser.schemas import schemas
 from pydantic import AnyUrl
 from datetime import datetime
 from sqlalchemy.orm import Session
-from FastParser.db.base import BaseRequests
+from fastparser.db.base import BaseRequests
 
 
 class ArticleRequests(BaseRequests):

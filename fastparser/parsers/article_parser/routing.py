@@ -2,17 +2,17 @@ from sqlalchemy.exc import IntegrityError
 from fastapi import FastAPI, APIRouter
 from typing import Union
 from starlette.status import HTTP_201_CREATED
-from FastParser.db.configs import Base, engine, ArticleParserSession
 from fastapi_utils.cbv import cbv
-from FastParser.parsers.article_parser.schemas.schemas import GetArticle, ArticleParserBase, \
+from fastparser.db.configs import Base, engine, ArticleParserSession
+from fastparser.parsers.article_parser.schemas.schemas import GetArticle, ArticleParserBase, \
     ArticleImages
 from pydantic import AnyUrl
-from FastParser.parsers.article_parser.article_parser import ParseUrl
-from FastParser.db.parsers.article_parser.requests import ArticleRequests, ArticleImagesRequests
+from fastparser.parsers.article_parser.article_parser import ParseUrl
+from fastparser.db.parsers.article_parser.requests import ArticleRequests, ArticleImagesRequests
 
 
 Base.metadata.create_all(bind=engine)
-parser = FastAPI(title="FastParser", description="Parses text and images from article.")
+parser = FastAPI(title="fastparser", description="Parses text and images from article.")
 router = APIRouter(tags=["Parser"])
 
 

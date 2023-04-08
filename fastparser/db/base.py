@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from FastParser.db.configs import Base
+from fastparser.db.configs import Base
 
 
 class BaseRequests:
